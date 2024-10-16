@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de encuestas</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Seleccione un Estado</h1>
+    <form>
+        <label for="estado">Estado:</label>
+        <select id="estado" name="estado">
+            <option value="">Seleccione un estado</option>
+            {% for estado in estados %}
+                <option value="{{ estado.id }}">{{ estado.nombre }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="municipio">Municipio:</label>
+        <select id="municipio" name="municipio">
+            <option value="">Seleccione un municipio</option>
+        </select>
+    </form>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#estado').change(function () {
+                var estadoId = $(this).val();  // Obtener el ID del estado seleccionado
+                if (estadoId) {
+                    $.ajax({
+                        url: "{% url 'cargar_municipios' %}",  // URL para cargar los municipios
+                        data: {
+                            'estado_id': estadoId  // Pasar el ID del estado como parámetro
+                        },
+                        success: function (data) {
+                            $('#municipio').html('<option value="">Seleccione un municipio</option>');  // Limpiar el dropdown de municipios
+                            $.each(data, function (key, value) {
+                                $('#municipio').append('<option value="' + value.id + '">' + value.nombre + '</option>');
+                            });
+                        }
+                    });
+                } else {
+                    $('#municipio').html('<option value="">Seleccione un municipio</option>');  // Si no se selecciona un estado, limpiar municipios
+                }
+            });
+        });
+    </script>
+</body>
+</html>
